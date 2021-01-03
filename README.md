@@ -1,7 +1,7 @@
 # Reinforcement-Learning-for-Control-of-Valves
 This project uses DDPG for "optimal" control of non-linear valves. Uses MATLAB and Simulink
 
-TRAINING FILES:
+## TRAINING FILES:
 ---------------
 1. sm_DDPG_Training_Circuit.slx: 	Simulink: Non-linear valve model, DDPG agent controller
 2. code_DDPG_Training.m:		MATLAB code: Create a DDPG agent and train using Graded Learning   
