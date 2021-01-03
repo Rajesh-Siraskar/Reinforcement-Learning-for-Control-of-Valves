@@ -26,7 +26,7 @@ STABILITY ANALYSIS:
 
 
 Please cite as:
-
+```
 @misc{siraskar2020reinforcement,
       title={Reinforcement Learning for Control of Valves}, 
       author={Rajesh Siraskar},
@@ -35,3 +35,4 @@ Please cite as:
       archivePrefix={arXiv},
       primaryClass={cs.LG}
 }
+```
