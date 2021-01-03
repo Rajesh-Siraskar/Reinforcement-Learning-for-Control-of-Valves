@@ -1,6 +1,10 @@
 # Reinforcement-Learning-for-Control-of-Valves
 This project uses DDPG for "optimal" control of non-linear valves. Uses MATLAB and Simulink
 
+Paper: https://arxiv.org/abs/2012.14668
+
+The paper introduces the use of MATLAB's Reinforcement Learning ToolBox to create "optimal" controllers for non-linear plants such as valves. "Graded Learning" is a simple "coaching" method, that allows one to train an agent much more efficiently. Graded Learning is the simplest (and application/practise oriented) form of Curriculum Learning. 
+
 TRAINING FILES:
 ---------------
 1. sm_DDPG_Training_Circuit.slx: 	Simulink: Non-linear valve model, DDPG agent controller
