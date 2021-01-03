@@ -23,3 +23,15 @@ STABILITY ANALYSIS:
 3. sm_StabilityStudy.slx                Simulink: Model to estimate the transfer function
 4. data_SA_TransferFunctions.mat    	Data file: Store the transfer function    
 5. data_TransferFunctions_NP3_NZ1.mat   Data file: Store the transfer function (example transfer function with 3 poles and 1 zero)
+
+
+Please cite as:
+
+@misc{siraskar2020reinforcement,
+      title={Reinforcement Learning for Control of Valves}, 
+      author={Rajesh Siraskar},
+      year={2020},
+      eprint={2012.14668},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
