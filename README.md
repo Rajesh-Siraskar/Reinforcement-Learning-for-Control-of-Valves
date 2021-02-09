@@ -7,6 +7,8 @@ The paper introduces the use of MATLAB's Reinforcement Learning ToolBox to creat
 
 Note that - Graded Learning is the simplest (and application/practise oriented) form of Curriculum Learning. 
 
+[![View Reinforcement Learning for Control of Non-Linear Valves on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://in.mathworks.com/matlabcentral/fileexchange/87132-reinforcement-learning-for-control-of-non-linear-valves)
+
 TRAINING FILES:
 ---------------
 1. sm_DDPG_Training_Circuit.slx: 	Simulink: Non-linear valve model, DDPG agent controller
