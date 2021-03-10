@@ -20,38 +20,44 @@
 % -------------------------------------------------------------------------
 % Code description:
 % -------------------------------------------------------------------------
-%
-% Set the following global variables before trying:
-% - BASE_PATH: Points to your base path for storing the models (currently set to 'D:/RLVC/models/')
-% - VERSION: Version suffix for your model, say "V1", or "Grade-1" etc. 
-%
-% Next set the  Graded Learning parameters
-% Graded Learning: We trained the agent in SIX stages (Grade-I to Grade-VI) by successively increasing the difficulty 
-%  of the task. The parameters will be based on your process and plant. For this code, we used the following:
-% (1) TIME_DELAY = Time-delay parameter (L) of the FOPTD process. Set as 0.1, 0.5, 1.5, 2.0 and 2.5
-% (2) fS = Non-linear valve stiction. We use the following stages 1/10th of 8.5, followed by 1/5th, 1/2, 2/3 and
-% 		   finally full 8.4
-% (3) fD = Non-linear valve dynamic friction. We used the same fractions as above for fS for fD, finally ending 
-%		   with the actual value of 3.5243
-%
-%
-%
-% Graded Learning Stages:
-% GRADE_I:    TIME_DELAY=0.1; fS = 8.4/10; fD = 3.5243/10 
-% GRADE_II:   TIME_DELAY=0.5; fS = 8.4/5; fD = 3.5243/5
-% GRADE_III:  TIME_DELAY=1.5; fS = 8.4/2; fD = 3.5243/2
-% GRADE_IV:   TIME_DELAY=1.5; fS = 8.4/1.5; fD = 3.5243/1.5
-% GRADE_V:    TIME_DELAY=2.0, fS/1.5 and fD/1.5
-% GRADE_VI:   TIME_DELAY=2.5, fS/1.0 and fD/1.0
-%--------------------------------------------------------------------------
+% ### 1. Training the agent:
+
+% To train the agent, launch the Simulink model (sm_DDPG_Training_Circuit.slx) and then ensure variables are correctly set in the code file (code_DDPG_Training.m) and excute the code.  
+
+% Review/set the following global and "Graded Learning" variables:
+% 1. BASE_PATH: Points to your base path for storing the models (currently set to 'D:/RLVC/models/')
+% 2. VERSION: Version suffix for your model, say "V1", or "Grade-1" etc. Ensure you change this so that a new model is created during each stage of the training process. 
+% 3. VALVE_SIMULATION_MODEL: Set to the Simulink model 'sm_DDPG_Training_Circuit'. In case you rename it you will have to set the name here.
+% 4. USE_PRE_TRAINED_MODEL = false: To train the first model - or to train only a SINGLE model set to 'false'
+	To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
+% 5. PRE_TRAINED_MODEL_FILE = 'Grade_I.mat': Set to file name of previous stage model. Example shown here is set to Grade_I model, to continue training an agent and create a Grade_II model. 
+
+% Next set the  Graded Learning parameters:
+
+% Graded Learning: We trained the agent in SIX stages (Grade-I to Grade-VI) by successively increasing the difficulty of the task. The parameters will be based on your process and plant. For this code, we used the following:
+
+% 1. TIME_DELAY = Time-delay parameter (L) of the FOPTD process. Set as 0.1, 0.5, 1.5, 2.0 and 2.5
+% 2. fS = Non-linear valve stiction. We use the following stages 1/10th of 8.5, followed by 1/5th, 1/2, 2/3 and finally full 8.4
+% 3. fD = Non-linear valve dynamic friction. We used the same fractions as above for fS for fD, finally ending with the actual value of 3.5243
+		   
+% Suggested Graded Learning stages:
+% - GRADE_I:    TIME_DELAY=0.1; fS = 8.4/10; fD = 3.5243/10
+% - GRADE_II:   TIME_DELAY=0.5; fS = 8.4/5; fD = 3.5243/5
+% - GRADE_III:  TIME_DELAY=1.5; fS = 8.4/2; fD = 3.5243/2
+% - GRADE_IV:   TIME_DELAY=1.5; fS = 8.4/1.5; fD = 3.5243/1.5
+% - GRADE_V:    TIME_DELAY=2.0, fS = 8.4//1.5; fD = 3.5243/1.5
+% - GRADE_VI:   TIME_DELAY=2.5, fS = 8.4//1.0; fD = 3.5243/1.0
+
+% ### 2. Experimenting with the trained agent:
+% -------------------------------------------------------------------------
 
 clear all;
 tstart= datetime();
 BASE_PATH = 'D:/RLVC/models/'
 
-VERSION = 'Grade_VI';
+VERSION = 'Grade_I';
 % GRADED LEARNING PARAMETERS
-TIME_DELAY = 2.0;
+TIME_DELAY = 0.1;
 
 SAVE_AGENT_THRESHOLD = 700; 
 STOP_TRAINING = 730;

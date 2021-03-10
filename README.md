@@ -1,22 +1,72 @@
-# Reinforcement-Learning-for-Control-of-Valves
-
-Ver. 2.1. 10-Mar-2021: Improved documentation for new developers wanting to adapt the code for their own plant systems
-- Documenation for Elsevier’s MLWA (Machine Learning with Applications) Journal 
+# Reinforcement Learning for Control of Valves
 ---------------------------------------------------------------------------------------
+## Quick Summary:
+1. Original paper (https://arxiv.org/abs/2012.14668) explores RL for optimum control of non-linear systems
+2. Platform: MATLAB's Reinforcement Learning ToolBox (release R2019a) and Simulink
+3. code_DDPG_Training.m: Training code that uses DDPG to train an agent in a staged manner. Uses sm_DDPG_Training_Circuit.slx. This file is run iteratively, using Graded Learning to run on the previously stored model and enhancing it's "learning".    
+4. sm_DDPG_Training_Circuit.slx: Simlulink model to train the agent to control a non-linear valve model
+5. sm_Experimental_Setup.slx: Simulink model to compare the DDPG agent controller with PID, and experiment with various noise signals and noise sources
+6. code_Experimental_Setup.m: Load a pre-trained model (RL controller) and run to see effect. Uses sm_Experimental_Setup.slx 
+7. code_SA_TF_Estimator.m: Estimate a transfer function for the RL controller to perform stability analysis
+8. sm_StabilityStudy.slx: Simulink model used to estimate the transfer function
 
-This project uses DDPG for "optimal" control of non-linear valves. Uses MATLAB R2019a and Simulink.
 
-The paper introduces the use of MATLAB's Reinforcement Learning ToolBox to create "optimal" controllers for non-linear plants such as valves. "Graded Learning" is a simple "coaching" method, that allows one to train an agent much more efficiently. The paper highligths the learnings during the research and links the observations to previously published literature around challenges often experienced when using DDPG and reinforcement learning for optimal control. While the code and paper use Valve as a 'plant', the methods and code is easily adaptable to any industrial plant.
+## Introduction:
 
-Note that - Graded Learning is the simplest (and application/practise oriented) form of Curriculum Learning. 
+This code accompanies the paper titled "Reinforcement Learning for Control of Valves" https://arxiv.org/abs/2012.14668
 
-Document is organized in three sections: 
-1. How to run the MATLAB code and Simulink models as-is 
-2. How to train a RL controller for your own 'plant' system
-3. List of files, grouped under - Training the agent, Experimentation and Stability Analysis of the RL controller
+The paper explores RL for optimum control of non-linear systems. 
 
-RUNNING THE CODE
------------------
+It uses the DDPG (Deep Deterministic Policy-Gradient) algorithm to control a non-linear valve modelled based on di Capaci and Scali (2018). While the code and paper use valves as a 'plant', the method and code is easily adaptable to any industrial plant.
+
+The code is based on MATLAB's Reinforcement Learning ToolBox (release R2019a) and Simulink.
+
+Challenges associated with Reinforcement Learning (RL) are outlined in the paper. The paper explores "Graded Learning" to assist in efficiently training an RL agent. We decompose the training task into simpler objectives and train the agent in stages. The Graded Learning parameters will be based on your process and plant. 
+
+Note that Graded Learning is the simplest (and application/practise oriented) form of Curriculum Learning (Narvekar et al., 2020). 
+
+The paper and code uses the following elements as the controlled system:
+
+(1) An "industrial" process modelled using a first-order plus time-delay (FOPTD) transfer-function of the form 
+ 		G(s) = k * exp(-L.s) / (1 + T.s)
+		where k = 3.8163, T = 156.46 and L is the time-delay parameter = 2.5
+		
+(2) A non-linear valve modelled based on (di Capaci and Scali, 2018), characterized by two parameters:
+		Static friction or stiction: fS = 8.40
+		Dynamic friction: fD = 3.5243
+
+
+## Running the code
+
+### 1. Training the agent:
+
+To train the agent, launch the Simulink model (sm_DDPG_Training_Circuit.slx) and then ensure variables are correctly set in the code file (code_DDPG_Training.m) and excute the code.  
+
+Review/set the following global and "Graded Learning" variables:
+1. BASE_PATH: Points to your base path for storing the models (currently set to 'D:/RLVC/models/')
+2. VERSION: Version suffix for your model, say "V1", or "Grade-1" etc. Ensure you change this so that a new model is created during each stage of the training process. 
+3. VALVE_SIMULATION_MODEL: Set to the Simulink model 'sm_DDPG_Training_Circuit'. In case you rename it you will have to set the name here.
+4. USE_PRE_TRAINED_MODEL = false: To train the first model - or to train only a SINGLE model set to 'false'
+	To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
+5. PRE_TRAINED_MODEL_FILE = 'Grade_I.mat': Set to file name of previous stage model. Example shown here is set to Grade_I model, to continue training an agent and create a Grade_II model. 
+
+Next set the  Graded Learning parameters:
+
+Graded Learning: We trained the agent in SIX stages (Grade-I to Grade-VI) by successively increasing the difficulty of the task. The parameters will be based on your process and plant. For this code, we used the following:
+
+1. TIME_DELAY = Time-delay parameter (L) of the FOPTD process. Set as 0.1, 0.5, 1.5, 2.0 and 2.5
+2. fS = Non-linear valve stiction. We use the following stages 1/10th of 8.5, followed by 1/5th, 1/2, 2/3 and finally full 8.4
+3. fD = Non-linear valve dynamic friction. We used the same fractions as above for fS for fD, finally ending with the actual value of 3.5243
+		   
+Suggested Graded Learning stages:
+- GRADE_I:    TIME_DELAY=0.1; fS = 8.4/10; fD = 3.5243/10
+- GRADE_II:   TIME_DELAY=0.5; fS = 8.4/5; fD = 3.5243/5
+- GRADE_III:  TIME_DELAY=1.5; fS = 8.4/2; fD = 3.5243/2
+- GRADE_IV:   TIME_DELAY=1.5; fS = 8.4/1.5; fD = 3.5243/1.5
+- GRADE_V:    TIME_DELAY=2.0, fS = 8.4//1.5; fD = 3.5243/1.5
+- GRADE_VI:   TIME_DELAY=2.5, fS = 8.4//1.0; fD = 3.5243/1.0
+
+### 2. Experimenting with the trained agent:
 
 
 
@@ -51,3 +101,8 @@ Please cite as:
       primaryClass={cs.LG}
 }
 ```
+
+References:
+Narvekar, S., Peng, B., Leonetti, M., Sinapov, J., Taylor, M.E., Stone, P., 2020. "Curriculum learning for reinforcement learning domains: A framework and survey". arXiv preprint arXiv:2003.04960
+
+di Capaci, R.B., Scali, C., 2018. "An augmented PID control structure to compensate for valve stiction". IFAC-PapersOnLine 51, 799–804.
