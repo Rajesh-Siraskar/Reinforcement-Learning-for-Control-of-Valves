@@ -1,12 +1,10 @@
 # Reinforcement-Learning-for-Control-of-Valves
 
-Ver. 2.0. 10-Mar-2021: Improved documentation for new developers wanting to adapt the code for their own plant systems
+Ver. 2.1. 10-Mar-2021: Improved documentation for new developers wanting to adapt the code for their own plant systems
 - Documenation for Elsevier’s MLWA (Machine Learning with Applications) Journal 
 ---------------------------------------------------------------------------------------
 
-This project uses DDPG for "optimal" control of non-linear valves. 
-
-Uses MATLAB R2019a and Simulink.
+This project uses DDPG for "optimal" control of non-linear valves. Uses MATLAB R2019a and Simulink.
 
 The paper introduces the use of MATLAB's Reinforcement Learning ToolBox to create "optimal" controllers for non-linear plants such as valves. "Graded Learning" is a simple "coaching" method, that allows one to train an agent much more efficiently. The paper highligths the learnings during the research and links the observations to previously published literature around challenges often experienced when using DDPG and reinforcement learning for optimal control. While the code and paper use Valve as a 'plant', the methods and code is easily adaptable to any industrial plant.
 
