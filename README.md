@@ -1,25 +1,28 @@
 # Reinforcement Learning for Control of Valves
 ---------------------------------------------------------------------------------------
 ## Quick Summary:
-1. Original paper (https://arxiv.org/abs/2012.14668) explores RL for optimum control of non-linear systems
-2. Platform: MATLAB's Reinforcement Learning ToolBox (release R2019a) and Simulink
-3. code_DDPG_Training.m: Training code that uses DDPG to train an agent in a staged manner. Uses sm_DDPG_Training_Circuit.slx. This file is run iteratively, using Graded Learning to run on the previously stored model and enhancing it's "learning".    
-4. sm_DDPG_Training_Circuit.slx: Simlulink model to train the agent to control a non-linear valve model
-5. sm_Experimental_Setup.slx: Simulink model to compare the DDPG agent controller with PID, and experiment with various noise signals and noise sources
-6. code_Experimental_Setup.m: Load a pre-trained model (RL controller) and run to see effect. Uses sm_Experimental_Setup.slx 
-7. code_SA_TF_Estimator.m: Estimate a transfer function for the RL controller to perform stability analysis
-8. sm_StabilityStudy.slx: Simulink model used to estimate the transfer function
+* This code accompanies the paper titled "Reinforcement Learning for Control of Valves" https://arxiv.org/abs/2012.14668
+* The paper explores RL for optimum control of non-linear systems
+* Platform: MATLAB's Reinforcement Learning ToolBox (release R2019a) and Simulink
+
+*Training the RL controller:*
+* code_DDPG_Training.m: Training code that uses DDPG to train an agent in a staged manner. Uses sm_DDPG_Training_Circuit.slx. This file is run iteratively, using Graded Learning to run on the previously stored model and enhancing it's "learning".    
+* sm_DDPG_Training_Circuit.slx: Simlulink model to train the agent to control a non-linear valve model
+
+*Experiment with trained controller:*
+* sm_Experimental_Setup.slx: Simulink model to compare the DDPG agent controller with PID, and experiment with various noise signals and noise sources
+* code_Experimental_Setup.m: Load a pre-trained model (RL controller) and run to see effect. Uses sm_Experimental_Setup.slx 
+
+*Stability analysis of the RL controller:*
+* code_SA_TF_Estimator.m: Estimate a transfer function for the RL controller to perform stability analysis
+* sm_StabilityStudy.slx: Simulink model used to estimate the transfer function
 
 
 ## Introduction:
 
-This code accompanies the paper titled "Reinforcement Learning for Control of Valves" https://arxiv.org/abs/2012.14668
+The paper https://arxiv.org/abs/2012.14668 explores RL for optimum control of non-linear systems. 
 
-The paper explores RL for optimum control of non-linear systems. 
-
-It uses the DDPG (Deep Deterministic Policy-Gradient) algorithm to control a non-linear valve modelled based on di Capaci and Scali (2018). While the code and paper use valves as a 'plant', the method and code is easily adaptable to any industrial plant.
-
-The code is based on MATLAB's Reinforcement Learning ToolBox (release R2019a) and Simulink.
+We use the DDPG (Deep Deterministic Policy-Gradient) algorithm to control a non-linear valve modelled based on di Capaci and Scali (2018). While the code and paper use valves as a 'plant', the method and code is easily adaptable to any industrial plant.
 
 Challenges associated with Reinforcement Learning (RL) are outlined in the paper. The paper explores "Graded Learning" to assist in efficiently training an RL agent. We decompose the training task into simpler objectives and train the agent in stages. The Graded Learning parameters will be based on your process and plant. 
 
