@@ -11,15 +11,19 @@ The paper introduces the use of MATLAB's Reinforcement Learning ToolBox to creat
 Note that - Graded Learning is the simplest (and application/practise oriented) form of Curriculum Learning. 
 
 Document is organized in three sections: 
-(1) How to use the MATLAB code and Simulink models as-is 
-(2) How to train a RL controller for your own 'plant' system
-(3) List of files, grouped under - Training the agent, Experimentation and Stability Analysis of the RL controller
+1. How to run the MATLAB code and Simulink models as-is 
+2. How to train a RL controller for your own 'plant' system
+3. List of files, grouped under - Training the agent, Experimentation and Stability Analysis of the RL controller
+
+RUNNING THE CODE
+-----------------
+
 
 
 TRAINING FILES:
 ---------------
-1. sm_DDPG_Training_Circuit.slx: 	Simulink: Non-linear valve model, DDPG agent controller
-2. code_DDPG_Training.m:		MATLAB code: Create a DDPG agent and train using Graded Learning   
+1. sm_DDPG_Training_Circuit.slx: Simulink: Non-linear valve model, DDPG agent controller
+2. code_DDPG_Training.m: MATLAB code: Create a DDPG agent and train using Graded Learning   
 
 EXPERIMENT and VERIFY using trained agent:
 ------------------------------------------

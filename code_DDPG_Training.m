@@ -1,23 +1,53 @@
 %--------------------------------------------------------------------------
 % Reinforcement Learning for Valve Control
 % -------------------------------------------------------------------------
+% The follow code accompanies the paper titled "Reinforcement Learning for Control of Valves"
+% https://arxiv.org/abs/2012.14668
+% The paper explores RL for optimum control of non-linear systems. 
+% It uses the DDPG (Deep Deterministic Policy-Gradient) algorithm to control a non-linear valve modelled based on 
+%   the paper by di Capaci and Scali (2018), "An augmented PID control structure to compensate for valve stiction"
+%
+% The paper explores "Graded Learning" to assist in efficiently training an RL agent. We decompose the training 
+% task into simpler objectives and train the agent in stages. These parameters will be based on your process and plant. 
+% To follow the paper and code, we use the following:
+% (1) An "industrial" process modelled using a first-order plus time-delay (FOPTD) transfer-function of the form 
+%  		G(s) = k * exp(-L.s) / (1 + T.s)
+% 		where k = 3.8163, T = 156.46 and L is the time-delay parameter = 2.5
+% (2) A non-linear valve modelled based on (di Capaci and Scali, 2018), characterized by two parameters:
+%		Static friction or stiction: fS = 8.4
+%		Dynamic friction: fD = 3.5243
+% 
+% -------------------------------------------------------------------------
+% Code description:
+% -------------------------------------------------------------------------
+%
+% Set the following global variables before trying:
+% - BASE_PATH: Points to your base path for storing the models (currently set to 'D:/RLVC/models/')
+% - VERSION: Version suffix for your model, say "V1", or "Grade-1" etc. 
+%
+% Next set the  Graded Learning parameters
+% Graded Learning: We trained the agent in SIX stages (Grade-I to Grade-VI) by successively increasing the difficulty 
+%  of the task. The parameters will be based on your process and plant. For this code, we used the following:
+% (1) TIME_DELAY = Time-delay parameter (L) of the FOPTD process. Set as 0.1, 0.5, 1.5, 2.0 and 2.5
+% (2) fS = Non-linear valve stiction. We use the following stages 1/10th of 8.5, followed by 1/5th, 1/2, 2/3 and
+% 		   finally full 8.4
+% (3) fD = Non-linear valve dynamic friction. We used the same fractions as above for fS for fD, finally ending 
+%		   with the actual value of 3.5243
+%
+%
+%
 % Graded Learning Stages:
-% GRADE_I    TIME_DELAY=0.1; fS = 8.4/10; fD = 3.5243/10 
-% GRADE_II   TIME_DELAY=0.5; fS = 8.4/5; fD = 3.5243/5
-% GRADE_III  TIME_DELAY=1.5; fS = 8.4/2; fD = 3.5243/2
-% GRADE_IV   TIME_DELAY=1.5; fS = 8.4/1.5; fD = 3.5243/1.5
-% GRADE_IV   TIME_DELAY=1.5, fS/1.5 and fD/1.5
-% GRADE_V    TIME_DELAY=2.0, fS/1.5 and fD/1.5
-% GRADE_VI   TIME_DELAY=2.5, fS/1.0 and fD/1.0
-%--------------------------------------------------------------------------
-% 05-Oct-2020: % NORMAL Non_Graded_V2 version
-% 07-Oct-2020: Debugged: Non_Graded_OneShot_V4: Reset now from 20-100
-%               and stop/done when flow < 0 and > 120 instead of 10 and 60
+% GRADE_I:    TIME_DELAY=0.1; fS = 8.4/10; fD = 3.5243/10 
+% GRADE_II:   TIME_DELAY=0.5; fS = 8.4/5; fD = 3.5243/5
+% GRADE_III:  TIME_DELAY=1.5; fS = 8.4/2; fD = 3.5243/2
+% GRADE_IV:   TIME_DELAY=1.5; fS = 8.4/1.5; fD = 3.5243/1.5
+% GRADE_V:    TIME_DELAY=2.0, fS/1.5 and fD/1.5
+% GRADE_VI:   TIME_DELAY=2.5, fS/1.0 and fD/1.0
 %--------------------------------------------------------------------------
 
 clear all;
 tstart= datetime();
-BASE_PATH = 'D:/Rajesh/RLVC3/RLVC3_Matlab/models/'
+BASE_PATH = 'D:/RLVC/models/'
 
 VERSION = 'Grade_VI';
 % GRADED LEARNING PARAMETERS
