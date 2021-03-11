@@ -1,11 +1,13 @@
 %--------------------------------------------------------------------------
-% Reinforcement Learning for Valve Control. V.5.2: 11-Mar. 5:18pm
+% Reinforcement Learning for Valve Control. V.5.4: 11-Mar. 11pm
 % Author:       Rajesh Siraskar
 % e-mail:       rajeshsiraskar@gmail.com; siraskar@coventry.ac.uk
 % University:   Coventry University, UK, MTech Automotive Engineering
 %
 % Code:         Experiment and validate a trained RL controller. Compare
-%               against PID control
+%               against PID control.
+%               This code accompanies the paper titled "Reinforcement Learning for Control of Valves"
+%               https://arxiv.org/abs/2012.14668
 % -------------------------------------------------------------------------
 %
 % To experiment with a trained RL controller/agent, launch the Simulink model `sm_Experimental_Setup.slx` and then ensure 

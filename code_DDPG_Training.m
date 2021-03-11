@@ -1,5 +1,5 @@
 %--------------------------------------------------------------------------
-% Reinforcement Learning for Valve Control. V.5.2: 11-Mar. 5:18pm
+% Reinforcement Learning for Valve Control. V.5.4: 11-Mar. 11pm
 % Author:       Rajesh Siraskar
 % e-mail:       rajeshsiraskar@gmail.com; siraskar@coventry.ac.uk
 % University:   Coventry University, UK, MTech Automotive Engineering
@@ -240,7 +240,6 @@ if USE_PRE_TRAINED_MODEL
     sprintf('- RLVC: Loading pre-trained model: %s', PRE_TRAINED_MODEL_FILE)
     RL_MODEL_FILE = strcat(MODELS_PATH, PRE_TRAINED_MODEL_FILE);                
     load(RL_MODEL_FILE,'agent');
-    % agent = saved_agent;
 else
     agent = rlDDPGAgent(actor, critic, agentOpts);
 end

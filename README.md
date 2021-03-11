@@ -86,6 +86,20 @@ Variables to be set:
 3. `PRE_TRAINED_MODEL_FILE = 'Grade_V.mat'`: Pre-trained model (RL controller) to be tested or validated. Example shows a model called `Grade_V.mat`
 4. `TIME_DELAY`, `fS` (stiction) and `fD` (dynamic friction): Variables that represent the physical parameters
 
+### 3. Stability Analysis:
+Stability Analysis of the RL controller.
+Note that the "System Identification Toolbox" must be installed to estimate transfer-functions
+
+Steps:
+1. Ensure Estimated TF block is commented through in Simulink model
+2. SIMULATE_MODE = true, for loading 'agent'
+      - Check that 'agent' is seen in the MATLAB Workspace
+3. Run code, this loads 'agent' and runs the loop once
+4. *Manually* run the simulink models to load the 'out' variables
+      - Check that 'out' is seen in the MATLAB Workspace
+5. SIMULATE_MODE = false for TF estimation mode
+      - Set NP and NZ as the number of poles and zeros as estimation parameters
+6. Run code again to estimate TFs
 ---------------------------------------------------------------------------------------
 
 ## CODE FILES:
@@ -106,10 +120,11 @@ Variables to be set:
 
 1. `code_SA_TF_Estimator.m`: MATLAB code: Estimate a Transfer function for the RL controller
 2. `code_SA_Utilities.m`: A small  utilities file for plotting etc.
-3. `sm_StabilityStudy.slx`:  Simulink: Model to estimate the transfer function
+3. `sm_StabilityStudy.slx`:  Simulink: Model to estimate the transfer function for the RL controller
 4. `data_SA_TransferFunctions.mat`: Data file: Store the transfer function    
 5. `data_TransferFunctions_NP3_NZ1.mat`: Data file: Store the transfer function (example transfer function with 3 poles and 1 zero)
 
+Note that the "System Identification Toolbox" must be installed to estimate transfer-functions
 
 Please cite as:
 ```
