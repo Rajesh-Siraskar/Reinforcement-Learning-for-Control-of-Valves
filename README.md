@@ -47,15 +47,16 @@ The paper and code uses the following elements as the controlled system:
 
 ### 1. Training the agent:
 
-To train the agent, launch the Simulink model (`sm_DDPG_Training_Circuit.slx`) and then ensure variables are correctly set in the code file (`code_DDPG_Training.m`) and excute the code.  
+To train the agent, launch the Simulink model `sm_DDPG_Training_Circuit.slx` and then ensure variables are correctly set in the code file `code_DDPG_Training.m` and excute the code.  
 
 Review/set the following global and "Graded Learning" variables:
-1. `BASE_PATH`: Points to your base path for storing the models (currently set to 'D:/RLVC/models/')
+1. `MODELS_PATH`: Points to your base path for storing the models. Leave it to 'models' and the code will create a folder if it does not exist.
 2. `VERSION`: Version suffix for your model, say "V1", or "Grade-1" etc. Ensure you change this so that a new model is created during each stage of the training process. 
 3. `VALVE_SIMULATION_MODEL`: Set to the Simulink model 'sm_DDPG_Training_Circuit'. In case you rename it you will have to set the name here.
 4. `USE_PRE_TRAINED_MODEL = false`: To train the first model - or to train only a SINGLE model set to 'false'
 	To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
 5. `PRE_TRAINED_MODEL_FILE = 'Grade_I.mat'`: Set to file name of previous stage model. Example shown here is set to Grade_I model, to continue training an agent and create a Grade_II model. 
+6. `MAX_EPISODES = 1000`: This is the maximum episodes a training round lasts. Reduce this initally if you want to test it. However training a stable agent requires 1000 of episodes
 
 Next set the  Graded Learning parameters:
 
@@ -77,7 +78,13 @@ Suggested Graded Learning stages:
 
 ### 2. Experimenting with the trained agent:
 
+To experiment with a trained RL controller/agent, launch the Simulink model `sm_Experimental_Setup.slx` and then ensure variables are correctly set in the code file `code_Experimental_Setup.m` and excute the code.
 
+Variables to be set:
+1. `MODELS_PATH`: Points to your base path for storing the models. Default 'models/'
+2. `VALVE_SIMULATION_MODEL = sm_Experimental_Setup`: Points to Simulink model used for validation against PID and experimenting with different noise sources etc.
+3. `PRE_TRAINED_MODEL_FILE = 'Grade_V.mat'`: Pre-trained model (RL controller) to be tested or validated. Example shows a model called `Grade_V.mat`
+4. `TIME_DELAY`, `fS` (stiction) and `fD` (dynamic friction): Variables that represent the physical parameters
 
 ---------------------------------------------------------------------------------------
 

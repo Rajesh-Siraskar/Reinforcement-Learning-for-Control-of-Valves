@@ -1,6 +1,13 @@
 %--------------------------------------------------------------------------
-% Reinforcement Learning for Valve Control
+% Reinforcement Learning for Valve Control. V.5.2: 11-Mar. 5:18pm
+% Author:       Rajesh Siraskar
+% e-mail:       rajeshsiraskar@gmail.com; siraskar@coventry.ac.uk
+% University:   Coventry University, UK, MTech Automotive Engineering
+%
+% Code:         DDPG Training. Train a RL controller to control a
+%               non-linear valve
 % -------------------------------------------------------------------------
+% 
 % This code accompanies the paper titled "Reinforcement Learning for Control of Valves"
 % https://arxiv.org/abs/2012.14668
 % The paper explores RL for optimum control of non-linear systems. 
@@ -18,37 +25,41 @@
 %		Dynamic friction: fD = 3.5243
 % 
 % -------------------------------------------------------------------------
-% Code description:
+% Code description: Training the agent, using Graded Learning
 % -------------------------------------------------------------------------
-% ### 1. Training the agent:
+% 
+% To train the agent, launch the Simulink model (sm_DDPG_Training_Circuit.slx) and then ensure variables are correctly 
+%   set in the code file (code_DDPG_Training.m) and excute the code.  
 
-% To train the agent, launch the Simulink model (sm_DDPG_Training_Circuit.slx) and then ensure variables are correctly set in the code file (code_DDPG_Training.m) and excute the code.  
-
-% Review/set the following global and "Graded Learning" variables:
-% 1. BASE_PATH: Points to your base path for storing the models (currently set to 'D:/RLVC/models/')
-% 2. VERSION: Version suffix for your model, say "V1", or "Grade-1" etc. Ensure you change this so that a new model is created during each stage of the training process. 
-% 3. VALVE_SIMULATION_MODEL: Set to the Simulink model 'sm_DDPG_Training_Circuit'. In case you rename it you will have to set the name here.
+% Review/set the following *BASIC* and "Graded Learning" variables:
+% 1. MODELS_PATH: Points to your base path for storing the models
+% 2. VERSION: Version suffix for your model, say "V1", or "Grade-1" etc. Ensure you change this so that a new model is 
+%       created during each stage of the training process. 
+% 3. VALVE_SIMULATION_MODEL: Set to the Simulink model 'sm_DDPG_Training_Circuit'
 % 4. USE_PRE_TRAINED_MODEL = false: To train the first model - or to train only a SINGLE model set to 'false'
-%	  To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
-% 5. PRE_TRAINED_MODEL_FILE = 'Grade_I.mat': Set to file name of previous stage model. Example shown here is set to Grade_I model, to continue training an agent and create a Grade_II model. 
+%       To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
+% 5. PRE_TRAINED_MODEL_FILE = 'Grade_I.mat': Set to file name of previous stage model. Example shown here is set to 
+%       Grade_I model, to continue training an agent and create a say a Grade_II model. 
+% 6. MAX_EPISODES = 1000: This is the maximum episodes a training round lasts. Reduce this initally if you want to test it. 
+%       However training a stable agent requires 1000 of episodes
 
 % Next set the  Graded Learning parameters:
 
-% Graded Learning: We trained the agent in SIX stages (Grade-I to Grade-VI) by successively increasing the difficulty of the task. The parameters will be based on your process and plant. For this code, we used the following:
+% Graded Learning: We trained the agent in SIX stages (Grade-I to Grade-VI) by successively increasing the difficulty of the task. 
+% The parameters will be based on your process and plant. For this project, we used the following:
+% 1. TIME_DELAY = Time-delay parameter (L) of the FOPTD process. Start with a low value such as 0.1 and increase in steps 
+%       untill final value 2.5
+% 2. fS = Non-linear valve stiction. Start with a low value such as 1/10th of actual value, followed by 1/5th, 1/2 etc. and 
+%       finally full 8.4
+% 3. fD = Non-linear valve dynamic friction. Start with a low value as for fS and end with final value 3.5243
 
-% 1. TIME_DELAY = Time-delay parameter (L) of the FOPTD process. Set as 0.1, 0.5, 1.5, 2.0 and 2.5
-% 2. fS = Non-linear valve stiction. We use the following stages 1/10th of 8.5, followed by 1/5th, 1/2, 2/3 and finally full 8.4
-% 3. fD = Non-linear valve dynamic friction. We used the same fractions as above for fS for fD, finally ending with the actual value of 3.5243
-		   
 % Suggested Graded Learning stages:
 % - GRADE_I:    TIME_DELAY=0.1; fS = 8.4/10; fD = 3.5243/10
 % - GRADE_II:   TIME_DELAY=0.5; fS = 8.4/5; fD = 3.5243/5
 % - GRADE_III:  TIME_DELAY=1.5; fS = 8.4/2; fD = 3.5243/2
 % - GRADE_IV:   TIME_DELAY=1.5; fS = 8.4/1.5; fD = 3.5243/1.5
-% - GRADE_V:    TIME_DELAY=2.0, fS = 8.4//1.5; fD = 3.5243/1.5
-% - GRADE_VI:   TIME_DELAY=2.5, fS = 8.4//1.0; fD = 3.5243/1.0
-
-% ### 2. Experimenting with the trained agent:
+% - GRADE_V:    TIME_DELAY=2.0, fS = 8.4/1.5; fD = 3.5243/1.5
+% - GRADE_VI:   TIME_DELAY=2.5, fS = 8.4/1.0; fD = 3.5243/1.0
 % -------------------------------------------------------------------------
 
 clear all;
@@ -59,18 +70,17 @@ tstart= datetime();
 %%            please review/set variables in this section-1
 %% ========================================================================
 
-TRAINING_MODE = true;
 
 %% Set paths
-MODELS_PATH = 'models/'
-VALVE_SIMULATION_MODEL = 'sm_DDPG_Training_Circuit';
+MODELS_PATH = 'models/';
+VALVE_SIMULATION_MODEL = 'sm_DDPG_Training_Circuit'; % Simulink training circuit
 
 %% Set version for model
 % For Graded Learning we apply transfer learning. Point to the pre-trained 
-%    model to continue learning on
-VERSION = 'Grade_I';
-USE_PRE_TRAINED_MODEL = false;
-PRE_TRAINED_MODEL_FILE = 'models/Grade_I.mat';
+%    model to continue learning on. Do not include the path.
+VERSION = 'Grade_II';
+USE_PRE_TRAINED_MODEL = true;
+PRE_TRAINED_MODEL_FILE = 'Grade_I.mat';
 
 %% Set training parameters
 SAVE_AGENT_THRESHOLD = 700;     % Save a point-model at this avg. reward 
@@ -80,9 +90,9 @@ MAX_REWARD = STOP_TRAINING;     % Stop model training at this avg. reward
 %% GRADED LEARNING PARAMETERS
 % Physical system parameters. Use iteratively. Suceessively increase
 %  difficulty of training task and apply Graded Learning to train the agent
-TIME_DELAY = 2.5/10;   % Time delay for process controlled by valve
-fS = 8.4000/10;        % Valve dynamic friction
-fD = 3.5243/10;        % Valve static friction
+TIME_DELAY = 2.5/2;   % Time delay for process controlled by valve
+fS = 8.4000/2;        % Valve dynamic friction
+fD = 3.5243/2;        % Valve static friction
 
 %% ========================================================================
 
@@ -96,7 +106,7 @@ MAX_EPISODES = 1000;
 Ts = 1.0;   % Ts: Sample time (secs)
 Tf = 150;   % Tf: Simulation length (secs)
 
-AVERAGE_WINDOW = 50;        % Average over 50 episodes of 150 each
+AVERAGE_WINDOW = 50;        % Average over 50 time-steps 
 ACCEPTABLE_DELTA = 0.05;
 
 % DDPG Hyper-paramaters
@@ -109,9 +119,13 @@ BATCH_SIZE = 64;
 neuronsOP_FC1 = 50; neuronsOP_FC2 = 25; neuronsAP_FC1 = 25;
 
 date_today = datetime();
-RL_MODEL_PATH = strcat(BASE_PATH, VERSION, '/');
 RL_AGENT = strcat(VALVE_SIMULATION_MODEL, '/RL Sub-System/RL Agent');
-RL_MODEL_FILE = strcat(RL_MODEL_PATH, 'RL_Model_DDPG_V', VERSION, '.mat');
+RL_MODEL_FILE = strcat(MODELS_PATH, 'RL_Model_', VERSION, '.mat');
+
+% Observation Vector is composed of
+%  (1) U(k)
+%  (2) Error signal
+%  (3) Error integral
 
 obsInfo = rlNumericSpec([3 1],...
     'LowerLimit',[-inf -inf 0]',...
@@ -204,7 +218,7 @@ trainOpts = rlTrainingOptions(...
     'ScoreAveragingWindowLength', AVERAGE_WINDOW, ...
     'Verbose', false, ...
     'Plots','training-progress',...
-    'SaveAgentDirectory', RL_MODEL_PATH, ...
+    'SaveAgentDirectory', MODELS_PATH, ...
     'SaveAgentValue', SAVE_AGENT_THRESHOLD, ...
     'SaveAgentCriteria','AverageReward', ...
     'StopTrainingCriteria','AverageReward',...
@@ -224,7 +238,7 @@ trainOpts = rlTrainingOptions(...
 if USE_PRE_TRAINED_MODEL    
     % Load experiences from pre-trained agent    
     sprintf('- RLVC: Loading pre-trained model: %s', PRE_TRAINED_MODEL_FILE)
-    RL_MODEL_FILE = strcat(BASE_PATH, PRE_TRAINED_MODEL_FILE);                
+    RL_MODEL_FILE = strcat(MODELS_PATH, PRE_TRAINED_MODEL_FILE);                
     load(RL_MODEL_FILE,'agent');
     % agent = saved_agent;
 else
@@ -232,25 +246,20 @@ else
 end
 
 % Train the agent or Load a pre-trained model and run in Suimulink
-if TRAINING_MODE
-    sprintf ('\n\n ==== RLVC: AGENT TRAINING ============================================================\n---- Ver.: %s, Time-Delay: %3.2f\n', VERSION, TIME_DELAY)
-    if (USE_PRE_TRAINED_MODEL)
-        sprintf (' ------ Transfer Learning enabled: %s', PRE_TRAINED_MODEL_FILE)
-    end
-    % Train the agent
-    trainingStats = train(agent, env, trainOpts);
-    % Save agent
-    nEpisodes = length(trainingStats.EpisodeIndex);
-    fname = strcat(RL_MODEL_PATH, VERSION, '_', int2str(nEpisodes), '.mat');
-    sprintf ('Saving file: %s', fname)
-    save(fname, "agent");
-    display("End training: ") 
-    tend = datetime();
-else        
-    % Validate the learned agent against the model by simulation
-    simOpts = rlSimulationOptions('MaxSteps', 2000, 'StopOnError','on');
-    experiences = sim(env, saved_agent, simOpts);
+sprintf ('\n\n ==== RL for control of valves V.5.1 ====================')
+sprintf ('\n ---- Ver.: %s, Time-Delay: %3.2f, fS: %3.2f, fD: %3.2f\n', VERSION, TIME_DELAY, fS, fD)
+if (USE_PRE_TRAINED_MODEL)
+    sprintf (' ---- Graded Learning in progress. Using pre-trained model: %s', PRE_TRAINED_MODEL_FILE)
 end
+% Train the agent
+trainingStats = train(agent, env, trainOpts);
+% Save agent
+nEpisodes = length(trainingStats.EpisodeIndex);
+fname = strcat(MODELS_PATH, VERSION, '.mat');
+sprintf ('Saving file: %s', fname)
+save(fname, "agent");
+display("End training: ") 
+tend = datetime();
 
 display("Elapsed time:")
 telapsed = tend - tstart;
