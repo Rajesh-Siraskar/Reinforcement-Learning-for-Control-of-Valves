@@ -1,14 +1,14 @@
 %--------------------------------------------------------------------------
 % Reinforcement Learning for Valve Control
 % -------------------------------------------------------------------------
-% The follow code accompanies the paper titled "Reinforcement Learning for Control of Valves"
+% This code accompanies the paper titled "Reinforcement Learning for Control of Valves"
 % https://arxiv.org/abs/2012.14668
 % The paper explores RL for optimum control of non-linear systems. 
 % It uses the DDPG (Deep Deterministic Policy-Gradient) algorithm to control a non-linear valve modelled based on 
 %   the paper by di Capaci and Scali (2018), "An augmented PID control structure to compensate for valve stiction"
 %
-% The paper explores "Graded Learning" to assist in efficiently training an RL agent. We decompose the training 
-% task into simpler objectives and train the agent in stages. These parameters will be based on your process and plant. 
+% The paper explores "Graded Learning" to efficiently train an RL agent. We decompose the training task into 
+%   simpler objectives and train the agent in stages. These parameters will be based on your process and plant. 
 % To follow the paper and code, we use the following:
 % (1) An "industrial" process modelled using a first-order plus time-delay (FOPTD) transfer-function of the form 
 %  		G(s) = k * exp(-L.s) / (1 + T.s)
@@ -29,7 +29,7 @@
 % 2. VERSION: Version suffix for your model, say "V1", or "Grade-1" etc. Ensure you change this so that a new model is created during each stage of the training process. 
 % 3. VALVE_SIMULATION_MODEL: Set to the Simulink model 'sm_DDPG_Training_Circuit'. In case you rename it you will have to set the name here.
 % 4. USE_PRE_TRAINED_MODEL = false: To train the first model - or to train only a SINGLE model set to 'false'
-	To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
+%	  To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
 % 5. PRE_TRAINED_MODEL_FILE = 'Grade_I.mat': Set to file name of previous stage model. Example shown here is set to Grade_I model, to continue training an agent and create a Grade_II model. 
 
 % Next set the  Graded Learning parameters:
@@ -53,22 +53,44 @@
 
 clear all;
 tstart= datetime();
-BASE_PATH = 'D:/RLVC/models/'
 
-VERSION = 'Grade_I';
-% GRADED LEARNING PARAMETERS
-TIME_DELAY = 0.1;
+%% ========================================================================
+%% Section 1: To try this RL controller training code as is - 
+%%            please review/set variables in this section-1
+%% ========================================================================
 
-SAVE_AGENT_THRESHOLD = 700; 
-STOP_TRAINING = 730;
-MAX_REWARD = STOP_TRAINING;
+TRAINING_MODE = true;
+
+%% Set paths
+MODELS_PATH = 'models/'
 VALVE_SIMULATION_MODEL = 'sm_DDPG_Training_Circuit';
 
-% For Transfer Learning provide the model to continue learning on
-TRAINING_MODE = true;
-USE_PRE_TRAINED_MODEL = true;
-PRE_TRAINED_MODEL_FILE = '/TestModels/Grade_IV_ver.3_600.mat';
+%% Set version for model
+% For Graded Learning we apply transfer learning. Point to the pre-trained 
+%    model to continue learning on
+VERSION = 'Grade_I';
+USE_PRE_TRAINED_MODEL = false;
+PRE_TRAINED_MODEL_FILE = 'models/Grade_I.mat';
 
+%% Set training parameters
+SAVE_AGENT_THRESHOLD = 700;     % Save a point-model at this avg. reward 
+STOP_TRAINING = 730;            % Stop model training at this avg. reward 
+MAX_REWARD = STOP_TRAINING;     % Stop model training at this avg. reward
+
+%% GRADED LEARNING PARAMETERS
+% Physical system parameters. Use iteratively. Suceessively increase
+%  difficulty of training task and apply Graded Learning to train the agent
+TIME_DELAY = 2.5/10;   % Time delay for process controlled by valve
+fS = 8.4000/10;        % Valve dynamic friction
+fD = 3.5243/10;        % Valve static friction
+
+%% ========================================================================
+
+%% ========================================================================
+%% Section-2: Modify below code only for advanced customization
+%% ========================================================================
+
+%% MODEL parameters
 % Epsiode and time related
 MAX_EPISODES = 1000;
 Ts = 1.0;   % Ts: Sample time (secs)
@@ -236,14 +258,10 @@ telapsed
 
 % ------------------------------------------------------------------------
 % Environment Reset function 
-% - Reset if the controlled speed drops to zero or negative or > 15
-% Ver 7.3 Limit to Capaci paper levels 
+% Randomize Reference_Signal between 0 and 100
+% Reset if the controlled speed drops below zero or exceeds 100 
 % ------------------------------------------------------------------------
 function in = localResetFcn(in, RL_System)
-    % -------------------------------------------------------------
-    % GENERIC TRAINING SIGNALs
-    % Randomize Reference_Signal between 0 and 100
-    % -------------------------------------------------------------
     block_Reference_Signal = strcat (RL_System, '/Reference_Signal');
     Reference_Signal = 20+randi(80) + rand;
     in = setBlockParameter(in, block_Reference_Signal, ...
@@ -251,19 +269,6 @@ function in = localResetFcn(in, RL_System)
 
     % Randomize initial condition of the flow (0 and 100) 
     block_Actual_Flow = strcat (RL_System, '/Plant/Process/FLOW');    
-    Actual_Flow = 20+randi(80) + rand;
+    Actual_Flow = 20 + randi(80) + rand;
     in = setBlockParameter(in, block_Actual_Flow, 'Bias', num2str(Actual_Flow));
-end
-
-% ------------------------------------------------------------------------
-% Run a pre-trained model in Simulink
-% ------------------------------------------------------------------------
-function RunPreTrainedModel(model_file, agent, env, maxsteps)
-
-    sprintf('- Loading and running %s: ', model_file)
-    load(model_file,'agent');
-
-    % Validate the learned agent against the model by simulation
-    rlSimulationOptions('MaxSteps', maxsteps, 'StopOnError', 'on');
-    experiences = sim(env, agent);
 end
