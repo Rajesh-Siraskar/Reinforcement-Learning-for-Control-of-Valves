@@ -32,7 +32,7 @@
 clear all;
 
 %% Set paths
-MODELS_PATH = 'models/';
+MODELS_PATH = 'results/';
 VALVE_SIMULATION_MODEL = 'sm_Experimental_Setup'; % Simulink experimentation circuit
 RL_AGENT = strcat(VALVE_SIMULATION_MODEL, '/RL Sub-System/RL Agent');
 

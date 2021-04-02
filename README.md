@@ -2,9 +2,10 @@
 ---------------------------------------------------------------------------------------
 
 ## Quick Summary:
-* This code accompanies the paper titled "Reinforcement Learning for Control of Valves" https://arxiv.org/abs/2012.14668
+* This code accompanies the paper titled "Reinforcement Learning for Control of Valves" https://doi.org/10.1016/j.mlwa.2021.100030
 * The paper explores RL for optimum control of non-linear systems
 * Platform: MATLAB's Reinforcement Learning ToolBox (release R2019a) and Simulink
+* Run `main.m` to perform a test-run to ensure code is working. It runs 4 code files sequentially. It will train an agent with just 100 episodes, store it in `\results` folder, validate it against the PID, perform stability analysis (on an existing transfer-function data file, stored in `\data` folder) and produce plots and store them in `\results` folder.
 
 #### Training the RL controller:
 * `code_DDPG_Training.m`: Training code that uses DDPG to train an agent in a staged manner. Uses sm_DDPG_Training_Circuit.slx. This file is run iteratively, using Graded Learning to run on the previously stored model and enhancing it's "learning".    
@@ -22,7 +23,7 @@
 
 ## Introduction:
 
-The paper https://arxiv.org/abs/2012.14668 explores RL for optimum control of non-linear systems. 
+The paper https://doi.org/10.1016/j.mlwa.2021.100030 explores RL for optimum control of non-linear systems. 
 
 We use the DDPG (Deep Deterministic Policy-Gradient) algorithm to control a non-linear valve modelled based on di Capaci and Scali (2018). While the code and paper use valves as a 'plant', the method and code is easily adaptable to any industrial plant.
 
@@ -128,13 +129,14 @@ Note that the "System Identification Toolbox" must be installed to estimate tran
 
 Please cite as:
 ```
-@misc{siraskar2020reinforcement,
-      title={Reinforcement Learning for Control of Valves}, 
-      author={Rajesh Siraskar},
-      year={2020},
-      eprint={2012.14668},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@article{SIRASKAR2021100030,
+    title = {Reinforcement learning for control of valves},
+    journal = {Machine Learning with Applications},
+    author = {Rajesh Siraskar},
+    year = {2021},
+    issn = {2666-8270},
+    doi = {https://doi.org/10.1016/j.mlwa.2021.100030},
+    url = {https://www.sciencedirect.com/science/article/pii/S2666827021000116}
 }
 ```
 

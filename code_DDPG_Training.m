@@ -40,8 +40,9 @@
 %       To train a pre-trained model, i.e. apply Graded Learning set USE_PRE_TRAINED_MODEL = true;
 % 5. PRE_TRAINED_MODEL_FILE = 'Grade_I.mat': Set to file name of previous stage model. Example shown here is set to 
 %       Grade_I model, to continue training an agent and create a say a Grade_II model. 
-% 6. MAX_EPISODES = 1000: This is the maximum episodes a training round lasts. Reduce this initally if you want to test it. 
-%       However training a stable agent requires 1000 of episodes
+% 6. MAX_EPISODES: This is the maximum episodes a training round lasts. Set to 100 for quick reproducibility. 
+%       Training a stable agent requires 1000 of episodes; set to a minumum
+%       of 1000 episodes.
 
 % Next set the  Graded Learning parameters:
 
@@ -72,14 +73,14 @@ tstart= datetime();
 
 
 %% Set paths
-MODELS_PATH = 'models/';
+MODELS_PATH = 'results/';
 VALVE_SIMULATION_MODEL = 'sm_DDPG_Training_Circuit'; % Simulink training circuit
 
 %% Set version for model
 % For Graded Learning we apply transfer learning. Point to the pre-trained 
 %    model to continue learning on. Do not include the path.
-VERSION = 'Grade_II';
-USE_PRE_TRAINED_MODEL = true;
+VERSION = 'Grade_I';
+USE_PRE_TRAINED_MODEL = false;
 PRE_TRAINED_MODEL_FILE = 'Grade_I.mat';
 
 %% Set training parameters
@@ -102,7 +103,7 @@ fD = 3.5243/2;        % Valve static friction
 
 %% MODEL parameters
 % Epsiode and time related
-MAX_EPISODES = 1000;
+MAX_EPISODES = 100;
 Ts = 1.0;   % Ts: Sample time (secs)
 Tf = 150;   % Tf: Simulation length (secs)
 

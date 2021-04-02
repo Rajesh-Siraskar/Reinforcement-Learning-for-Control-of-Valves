@@ -30,14 +30,14 @@
 warning ('off','all');
 
 %% Set paths and RL agent/controller to be analyzed
-MODELS_PATH = 'models/';
+MODELS_PATH = 'results/';
 VALVE_SIMULATION_MODEL = 'sm_StabilityStudy'; % Stability study Simulink circuit
 PRE_TRAINED_MODEL = 'Grade_I.mat';
     
 %% Flags to be set. See instructions above. Two rounds need to be run,
 %       (1) SIMULATE_MODE = true.  Run for creating the "data" for estimation the TF
 %       (2) SIMULATE_MODE = false. Run for estimating the TF from data created in previous step
-SIMULATE_MODE = false;
+SIMULATE_MODE = true;
 ESTIMATE_MODE = not(SIMULATE_MODE);
 
 % Physical system parameters. Use iteratively. Suceessively increase
